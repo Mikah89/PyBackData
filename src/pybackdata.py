@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import cmd
+import utils
 
 ## TODO Define API
 ### command "backup" - procedes to backup the data, either by argument or configured in file
@@ -11,7 +12,7 @@ class BackDataTerm(cmd.Cmd):
 
 
 def main():
-    pass
+    utils.create_config_file()
 
 if __name__ == "__main__":
     main()
