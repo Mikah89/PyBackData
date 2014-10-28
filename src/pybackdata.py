@@ -12,7 +12,7 @@ class BackDataTerm(cmd.Cmd):
 
 
 def main():
-    utils.create_config_file()
+    pass
 
 if __name__ == "__main__":
     main()
