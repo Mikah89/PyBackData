@@ -1,10 +1,17 @@
 #!/usr/bin/env python
 
-class Dropbox():
+import dropbox
+
+import utils
+
+class DropboxService():
+
+    @property
+    def DESCRIPTION():
+        return "dropbox"
 
     def __init__(self):
         __init()
-        pass
 
     """
     initializes the service state for use.
@@ -18,7 +25,7 @@ class Dropbox():
     Backups the list of files given by <files>
     if an entry of a file is a directory then all files in that directory will be backup up
     if it is a file only that file will be backed up
-    """    
+    """
     def backup(files, dropbox_folder=None):
         ## TODO support for file filters
         ## TODO support for recursive folder iteration
