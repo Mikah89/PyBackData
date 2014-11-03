@@ -13,7 +13,7 @@ def build_arg_list():
 def main():
     parser = build_arg_list()
     args = parser.parse_args()
-    service = ServiceFactory.create_service(parser.service)
+    service = ServiceFactory.create_service(args.service)
     service.backup()
 
 if __name__ == "__main__":
