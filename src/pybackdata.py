@@ -6,13 +6,13 @@ import utils
 from services.servicefactory import ServiceFactory
 
 def build_arg_list():
-    parser = argparser.ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument("service", type=str, help="Specifies the backup data service to use")
     return parser
 
 def main():
     parser = build_arg_list()
-    parser.parse_args()
+    args = parser.parse_args()
     service = ServiceFactory.create_service(parser.service)
     service.backup()
 
