@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 
-import cmd
+import argparse
+
 import utils
+from services.servicefactory import ServiceFactory
 
-## TODO Define API
-### command "backup" - procedes to backup the data, either by argument or configured in file
-### command "chuser" - Changes user and if necessary starts the process of acquiring the token
-#### @staticmethod <- static methods
-class BackDataTerm(cmd.Cmd):
-    pass
-
+def build_arg_list():
+    parser = argparser.ArgumentParser()
+    parser.add_argument("service", type=str, help="Specifies the backup data service to use")
+    return parser
 
 def main():
-    pass
+    parser = build_arg_list()
+    parser.parse_args()
+    service = ServiceFactory.create_service(parser.service)
+    service.backup()
 
 if __name__ == "__main__":
     main()
