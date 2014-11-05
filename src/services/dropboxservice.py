@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import dropbox
+from dropbox.client import DropboxOAuth2FlowNoRedirect, DropboxClient
+from dropbox import rest as dbrest
 
 import utils
+import constants
 
 class DropboxService():
 
@@ -19,7 +21,25 @@ class DropboxService():
     to execute the operations (e.g. service access)
     """
     def __init(self):
+        self.__request_client_token()
         return ""
+
+    def __request_client_token(self):
+        access_token = None
+        req_flow = DropboxOAuth2FlowNoRedirect(constants.APP_KEY, constants.APP_SECRET)
+        authorize_url = req_flow.start()
+        print ("1. Go to: " + authorize_url)
+        print ("2. Click \"Allow\" (you might have to log in first).")
+        print ("3. Copy the authorization code.")
+        auth_code = input("Enter the authorization code here: ").strip()
+
+        ## TODO function that use this, should be the one to caugh the exception
+        try:
+            access_token, user_id = req_flow.finish(auth_code)
+        except dbrest.ErrorResponse as e:
+            print('Error: %s' % (e,))
+
+        return access_token
 
     def backup(self):
         # Read from confi file the dirs or files

@@ -14,7 +14,10 @@ def main():
     parser = build_arg_list()
     args = parser.parse_args()
     service = ServiceFactory.create_service(args.service)
-    service.backup()
+    if service == None:
+        print ("The provided service is not supported: " + args.service)
+    else:
+        service.backup()
 
 if __name__ == "__main__":
     main()

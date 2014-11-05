@@ -2,6 +2,6 @@
 
 #Use your own
 APP_KEY = ""
-APP_TOKEN = ""
+APP_SECRET = ""
 
 CONF_FILE = "pybackdata.conf"
