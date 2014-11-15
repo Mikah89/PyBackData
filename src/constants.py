@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#Use your own
-APP_KEY = ""
-APP_SECRET = ""
-
 CONF_FILE = "pybackdata.conf"
+
+AUTH_TOKEN = "TOKEN"
+BACKUP_DATA = "DATA"
+BACKUP_FOLDER = "BACKUPFOLDER"

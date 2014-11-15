@@ -8,6 +8,7 @@ import configparser
 import constants
 
 
+config_reader = None
 
 def get_config_dir():
     conf_dir = ""
@@ -38,13 +39,25 @@ def create_config_file():
         print (err)
 
 def get_config_reader():
-    config_reader = None
     if config_reader is None and config_file_exist():
         config_reader = configparser.ConfigParser()
         config_reader.read(get_config_file())
 
     return config_reader
 
-def get_config_value(config_key):
+def get_config_section(section_key, config_key):
     reader = get_config_reader()
-    return None if reader == None else reader[config_key]
+    if section_key in reader and config_key in reader[section_key]:
+        return reader[section_key][config_key]
+    else:
+        return None
+
+def write_config_section(section_key, config_key, config_value):
+    reader = get_config_reader()
+    if section_key not in reader:
+        reader[section_key] = {config_key: config_value}
+    else:
+        reader[section_key][config_key] = config_value
+
+    with open(get_config_file(), 'w') as configfile:
+        reader.write(configfile)
