@@ -58,16 +58,28 @@ class DropboxService():
     def backup(self):
         if not __has_backup_data():
             print ("No data to backup. Terminated!")
+            return
         if not __has_backup_folder():
             print ("No destination location for backups. Terminated!")
+            return
 
-        ## TODO read files to backup and do the backup!
+        file_list = self.__get_backup_data()
+        self.__backup(file_list, constants.BACKUP_FOLDER)
 
     def __has_backup_data(self):
         return utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_DATA) != None
 
     def __has_backup_folder(self):
         return utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_FOLDER) != None
+
+    ## The path for each file should be separated by a ;
+    def __get_backup_data(self):
+        raw_list = utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_DATA)
+        split_list = raw_list.split(";")
+        for idx in range(len(split_list)):
+            split_list[idx] = split_list[idx].strip()
+
+        return split_list
 
     """
     Backups the list of files given by <files>
