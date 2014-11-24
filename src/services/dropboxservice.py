@@ -83,11 +83,12 @@ class DropboxService():
 
     """
     Backups the list of files given by <files>
-    if an entry of a file is a directory then all files in that directory will be backup up
-    if it is a file only that file will be backed up
     """
     def __backup(self, files, dropbox_folder=None):
-        # for data in files:
-        #     with open(data, 'rb') as datafile:
-        #         self.dropbox_instance
-        pass
+        for data in files:
+            with open(data, 'rb') as datafile:
+                ## TODO Parser path to get the filename and pass it as first argument
+                # db.put_file(<dest_path>, <object file>, <overwrite>)
+                response = self.dropbox_instance.put_file("", datafile, True)
+                ## TODO do something with response
+                ## TODO case when the file does not exist, continue but log it.
