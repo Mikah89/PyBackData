@@ -51,7 +51,7 @@ def create_config_file():
     
     conf_file = get_config_file()
     try:
-        os.makedirs(get_config_dir(), stat.S_IRWXU, exist_ok=True)
+        os.makedirs(get_config_dir(), stat.S_IRWXU, exist_ok=False)
         # Create file with permission for the ownter to read and write
         conf_file_fd = os.open(conf_file, os.O_CREAT, stat.S_IRUSR | stat.S_IWUSR)
         os.close(conf_file_fd)
@@ -61,7 +61,7 @@ def create_config_file():
 
 def get_config_reader():
     global config_reader
-    if config_reader is None and config_file_exist():
+    if config_reader == None and config_file_exist():
         config_reader = configparser.ConfigParser()
         config_reader.read(get_config_file())
 
@@ -69,6 +69,9 @@ def get_config_reader():
 
 def get_config_section(section_key, config_key):
     reader = get_config_reader()
+    if reader == None:
+        print ("No conf file")
+
     if section_key in reader and config_key in reader[section_key]:
         return reader[section_key][config_key]
     else:

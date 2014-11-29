@@ -24,11 +24,13 @@ class DropboxService():
     """
     def __init(self):
         self.__check_configuration()
+        ## TODO what if it fails?
         self.dropbox_instance = DropboxClient(self.token)
 
     def __check_configuration(self):
         self.token = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.AUTH_TOKEN)
         if self.token != None:
+            ## TODO check if it is sstill valid... user may have unistalled the app
             return
 
         self.__fill_app_keys()
