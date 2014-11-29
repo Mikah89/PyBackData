@@ -2,6 +2,7 @@
 
 import sys
 import os
+import os.path
 import stat
 import configparser
 
@@ -9,6 +10,23 @@ import constants
 
 
 config_reader = None
+
+def is_valid_folder(path):
+    return len(path) > 0
+
+
+def normalize_folder(path):
+    if not is_valid_folder(path):
+        raise Exception("Invalid path to normalize")
+    return os.path.normpath(path) + "/"
+
+def get_filename(path):
+    if not is_valid_folder(path):
+        raise Exception("Invalid path to file")
+
+    return os.path.split(path)[1]
+
+###########################################################
 
 def get_config_dir():
     conf_dir = ""
@@ -28,6 +46,9 @@ def config_file_exist():
     return os.path.exists(conf_file)
 
 def create_config_file():
+    if config_file_exist():
+        return
+    
     conf_file = get_config_file()
     try:
         os.makedirs(get_config_dir(), stat.S_IRWXU, exist_ok=True)
@@ -39,6 +60,7 @@ def create_config_file():
         print (err)
 
 def get_config_reader():
+    global config_reader
     if config_reader is None and config_file_exist():
         config_reader = configparser.ConfigParser()
         config_reader.read(get_config_file())

@@ -8,14 +8,13 @@ import constants
 
 class DropboxService():
 
-    self.token = None
-    self.dropbox_instance = None
-
     @property
     def DESCRIPTION():
         return "dropbox"
 
     def __init__(self):
+        self.token = None
+        self.dropbox_instance = None
         self.__init()
 
     """
@@ -25,13 +24,19 @@ class DropboxService():
     """
     def __init(self):
         self.__check_configuration()
+        self.dropbox_instance = DropboxClient(self.token)
 
     def __check_configuration(self):
-        if utils.get_config_section(DESCRIPTION.fget(), constants.AUTH_TOKEN) != None:
+        self.token = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.AUTH_TOKEN)
+        if self.token != None:
             return
 
+        self.__fill_app_keys()
+
         access_token = None
-        req_flow = DropboxOAuth2FlowNoRedirect(constants.APP_KEY, constants.APP_SECRET)
+        app_key = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_KEY)
+        app_secret = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_SECRET)
+        req_flow = DropboxOAuth2FlowNoRedirect(app_key, app_secret)
         authorize_url = req_flow.start()
         print ("1. Go to: " + authorize_url)
         print ("2. Click \"Allow\" (you might have to log in first).")
@@ -44,22 +49,31 @@ class DropboxService():
         except dbrest.ErrorResponse as e:
             print('Error: %s' % (e,))
 
-        utils.write_config_section(DESCRIPTION.fget(), constants.AUTH_TOKEN, access_token)
-        self.token = acess_token
-        self.dropbox_instance = DropboxClient(self.token)
+        utils.write_config_section(DropboxService.DESCRIPTION.fget(), constants.AUTH_TOKEN, access_token)
+        self.token = access_token
 
-        if not __has_backup_data():
+        if not self.__has_backup_data():
             print ("You do not seem to have the backup file/folders configured. Pybackdata won't backup anything " + \
                    "without that setting.")
-        if not __has_backup_folder():
+        if not self.__has_backup_folder():
             print ("You do not seem to have a target location  for the backups. Pybackdata won't backup anything " + \
                    "without that setting.")
 
+    def __fill_app_keys(self):
+        to_update = []
+        if utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_KEY) == None:
+            app_key = input("Enter your development app key: ").strip()
+            utils.write_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_KEY, app_key)
+
+        if utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_SECRET) == None:
+            app_secret = input("Enter your development app secret: ").strip()
+            utils.write_config_section(DropboxService.DESCRIPTION.fget(), constants.APP_SECRET, app_secret)
+
     def backup(self):
-        if not __has_backup_data():
+        if not self.__has_backup_data():
             print ("No data to backup. Terminated!")
             return
-        if not __has_backup_folder():
+        if not self.__has_backup_folder():
             print ("No destination location for backups. Terminated!")
             return
 
@@ -67,14 +81,14 @@ class DropboxService():
         self.__backup(file_list, constants.BACKUP_FOLDER)
 
     def __has_backup_data(self):
-        return utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_DATA) != None
+        return utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_DATA) != None
 
     def __has_backup_folder(self):
-        return utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_FOLDER) != None
+        return utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_FOLDER) != None
 
     ## The path for each file should be separated by a ;
     def __get_backup_data(self):
-        raw_list = utils.get_config_section(DESCRIPTION.fget(), constants.BACKUP_DATA)
+        raw_list = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_DATA)
         split_list = raw_list.split(";")
         for idx in range(len(split_list)):
             split_list[idx] = split_list[idx].strip()
@@ -86,9 +100,19 @@ class DropboxService():
     """
     def __backup(self, files, dropbox_folder=None):
         for data in files:
-            with open(data, 'rb') as datafile:
-                ## TODO Parser path to get the filename and pass it as first argument
-                # db.put_file(<dest_path>, <object file>, <overwrite>)
-                response = self.dropbox_instance.put_file("", datafile, True)
-                ## TODO do something with response
-                ## TODO case when the file does not exist, continue but log it.
+            try:
+                with open(data, 'rb') as datafile:
+                    service_path_raw = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_FOLDER)
+                    normalized_service_path = utils.normalize_folder(service_path_raw)
+                    final_path = normalized_service_path + utils.get_filename(data)
+                    print ("File Destination: " + final_path)
+                    try:
+                        # db.put_file(<dest_path>, <object file>, <overwrite>)
+                        response = self.dropbox_instance.put_file(final_path, datafile, True)
+                        print (data + " was uploaded (" + response['size'] + ")")
+                    except dbrest.ErrorResponse as e:
+                        print ("Error on upload. Skipped file!")
+                        print (e)
+            except OSError as e:
+                print ("Could not open file. Skipped!")
+                print (e)

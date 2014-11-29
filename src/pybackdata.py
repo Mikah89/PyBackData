@@ -14,6 +14,7 @@ def main():
     parser = build_arg_list()
     args = parser.parse_args()
     service = ServiceFactory.create_service(args.service)
+    utils.create_config_file()
     if service == None:
         print ("The provided service is not supported: " + args.service)
     else:
