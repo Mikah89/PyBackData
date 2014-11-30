@@ -17,4 +17,4 @@ key should be explained.
 
 **Contributions**
 
-More online services or improvement to the existing ones is always welcome!
+More online services or improvements to the existing ones are always welcome!
