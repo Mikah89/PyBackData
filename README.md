@@ -17,4 +17,5 @@ key should be explained.
 
 **Contributions**
 
-More online services or improvements to the existing ones are always welcome!
+More online services or improvements to the existing ones are always welcome! "Backup" should always be the public API
+of any eventual new service.
