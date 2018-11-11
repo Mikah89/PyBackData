@@ -7,5 +7,5 @@ class ServiceFactory():
     def create_service(service):
         if service == DropboxService.DESCRIPTION.fget():
             return DropboxService()
-        else:
-            return None # TODO raise custom exception
+
+        return None # TODO raise custom exception

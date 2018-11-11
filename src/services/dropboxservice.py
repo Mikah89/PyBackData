@@ -102,19 +102,22 @@ class DropboxService():
     """
     def __backup(self, files, dropbox_folder=None):
         for data in files:
-            try:
-                with open(data, 'rb') as datafile:
-                    service_path_raw = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_FOLDER)
-                    normalized_service_path = utils.normalize_folder(service_path_raw)
-                    final_path = normalized_service_path + utils.get_filename(data)
-                    print ("File Destination: " + final_path)
-                    try:
-                        # db.put_file(<dest_path>, <object file>, <overwrite>)
-                        response = self.dropbox_instance.put_file(final_path, datafile, True)
-                        print (data + " was uploaded (" + response['size'] + ")")
-                    except dbrest.ErrorResponse as e:
-                        print ("Error on upload. Skipped file!")
-                        print (e)
-            except OSError as e:
-                print ("Could not open file. Skipped!")
-                print (e)
+            self._put_file(data)
+
+    def _put_file(self, data):
+        try:
+            with open(data, 'rb') as datafile:
+                service_path_raw = utils.get_config_section(DropboxService.DESCRIPTION.fget(), constants.BACKUP_FOLDER)
+                normalized_service_path = utils.normalize_folder(service_path_raw)
+                final_path = normalized_service_path + utils.get_filename(data)
+                print ("File Destination: " + final_path)
+                try:
+                    # db.put_file(<dest_path>, <object file>, <overwrite>)
+                    response = self.dropbox_instance.put_file(final_path, datafile, True)
+                    print (data + " was uploaded (" + response['size'] + ")")
+                except dbrest.ErrorResponse as e:
+                    print ("Error on upload. Skipped file!")
+                    print (e)
+        except OSError as e:
+            print ("Could not open file. Skipped!")
+            print (e)

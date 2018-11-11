@@ -18,8 +18,8 @@ def main():
     service = ServiceFactory.create_service(args.service)
     if service == None:
         print ("The provided service is not supported: " + args.service)
-    else:
-        service.backup()
+        return
+    service.backup()
 
 if __name__ == "__main__":
     main()
